@@ -1,0 +1,1260 @@
+{% comment %} 
+{{ 'brand-logos.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+:root{
+  --logo-gap: {{ section.settings.logo_gap }}px;
+  --row-gap: {{ section.settings.row_gap }}px;
+  --logo-width: {{ section.settings.logo_width }}px;
+  --logo-height: {{ section.settings.logo_height }}px;
+  --logo-fit: {{ section.settings.logo_fit }};
+  --logo-position: {{ section.settings.logo_position }};
+  --logo-opacity: {{ section.settings.logo_opacity }};
+  --marquee-speed: {{ section.settings.speed }}s;
+}
+  
+{%- endstyle -%}
+
+
+<div class="brand-marquee color-{{ section.settings.color_scheme }} gradient">
+<div
+    class="page-width section-{{ section.id }}-padding isolate{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    {% if settings.animations_reveal_on_scroll %}
+      data-cascade
+    {% endif %}
+  >
+
+  {%- unless section.settings.title == blank -%}
+      <div class="title-wrapper--self-padded-mobile title-wrapper--no-top-margin {{ section.settings.title_alignment  }}">
+        <h2 class="title inline-richtext {{ section.settings.heading_size }}">
+          {{ section.settings.title }}
+        </h2>
+      </div>
+    {%- endunless -%}
+
+
+  {% if section.settings.subheading != blank %}
+    <div class="
+      {% if section.settings.subheading_style == 'subtitle' %}subtitle{% endif %}
+      {% if section.settings.subheading_style == 'uppercase' %}uppercase{% endif %}
+    ">
+      {{ section.settings.subheading }}
+    </div>
+  {% endif %}
+
+     <div class="logo-bars logo-mar-brand  ">
+      {%- for block in section.blocks -%}
+        {% case block.type %}
+          {%- when 'logo' -%}
+            <div class="track-horizontal forward-logos">
+              <div class="flex-horizontal">
+                {% for i in (1..50) %}
+                  {% capture image %}image{{ i }}{% endcapture %}
+                  {% capture alt %}alt{{ i }}{% endcapture %}
+                  {% assign image = block.settings[image] %}
+                  {% assign alt = block.settings[alt] %}
+                  {% if image != blank %}
+
+                      <img
+                        src="{{ image | img_url: 'master' }}"
+                        alt="{{ alt }}"
+                        height=""
+                        width=""
+                      >
+
+                  {% else %}
+
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+
+                  {% endif %}
+                {% endfor %}
+                {% for i in (1..50) %}
+                  {% capture image %}image{{ i }}{% endcapture %}
+                  {% capture alt %}alt{{ i }}{% endcapture %}
+                  {% assign image = block.settings[image] %}
+                  {% assign alt = block.settings[alt] %}
+                  {% if image != blank %}
+
+                      <img
+                        src="{{ image | img_url: 'master' }}"
+                        alt="{{ alt }}"
+                        height=""
+                        width=""
+                      >
+
+                  {% else %}
+
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+
+          {%- when 'image' -%}
+            <div class="track-horizontal  backward-logos">
+              <div class="flex-horizontal">
+                {% for i in (1..50) %}
+                  {% capture image %}image{{ i }}{% endcapture %}
+                  {% capture alt %}alt{{ i }}{% endcapture %}
+                  {% assign image = block.settings[image] %}
+                  {% assign alt = block.settings[alt] %}
+                  {% if image != blank %}
+
+                      <img
+                        src="{{ image | img_url: 'master' }}"
+                        alt="{{ alt }}"
+                        height=""
+                        width=""
+                      >
+
+                  {% else %}
+
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+
+                  {% endif %}
+                {% endfor %}
+                {% for i in (1..50) %}
+                  {% capture image %}image{{ i }}{% endcapture %}
+                  {% capture alt %}alt{{ i }}{% endcapture %}
+                  {% assign image = block.settings[image] %}
+                  {% assign alt = block.settings[alt] %}
+                  {% if image != blank %}
+
+                      <img
+                        src="{{ image | img_url: 'master' }}"
+                        alt="{{ alt }}"
+                        height=""
+                        width=""
+                      >
+
+                  {% else %}
+
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  <div class="center{% if show_mobile_slider %} small-hide medium-hide{% endif %}">
+      {%- if section.settings.button_label != blank -%}
+        <a
+          class="button button--primary"
+          {% if section.settings.button_link == blank %}
+            role="link" aria-disabled="true"
+          {% else %}
+            href="{{ section.settings.button_link }}"
+          {% endif %}
+        >
+          {{ section.settings.button_label | escape }}
+        </a>
+      {%- endif -%}
+    </div>
+</div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.brand_marquee.name",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "default": "Marquee",
+      "label": "t:sections.brand_marquee.settings.title.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.brand_marquee.settings.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.brand_marquee.settings.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.brand_marquee.settings.heading_size.options__3.label"
+        },
+        {
+          "value": "hxl",
+          "label": "t:sections.brand_marquee.settings.heading_size.options__4.label"
+        },
+        {
+          "value": "hxxl",
+          "label": "t:sections.brand_marquee.settings.heading_size.options__5.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.brand_marquee.settings.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "title_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.brand_marquee.settings.title_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.brand_marquee.settings.title_alignment.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.brand_marquee.settings.title_alignment.options__3.label"
+        }
+      ],
+      "default": "center",
+      "label": "t:sections.brand_marquee.settings.title_alignment.label"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "t:sections.brand_marquee.settings.logo_width.label",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "t:sections.brand_marquee.settings.logo_height.label",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "logo_fit",
+      "label": "t:sections.brand_marquee.settings.logo_fit.label",
+      "default": "contain",
+      "options": [
+        { 
+          "value": "contain", 
+          "label": "t:sections.brand_marquee.settings.logo_fit.options__1.label" 
+        },
+        { 
+          "value": "cover", 
+          "label": "t:sections.brand_marquee.settings.logo_fit.options__2.label" 
+        },
+        { 
+          "value": "fill", 
+          "label": "t:sections.brand_marquee.settings.logo_fit.options__3.label" 
+        },
+        { 
+          "value": "none", 
+          "label": "t:sections.brand_marquee.settings.logo_fit.options__4.label" 
+        },
+        { 
+          "value": "scale-down", 
+          "label": "t:sections.brand_marquee.settings.logo_fit.options__5.label" 
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "t:sections.brand_marquee.settings.logo_position.label",
+      "default": "center",
+      "options": [
+        { 
+          "value": "center", 
+          "label": "t:sections.brand_marquee.settings.logo_position.options__1.label" 
+        },
+        { 
+          "value": "top", 
+          "label": "t:sections.brand_marquee.settings.logo_position.options__2.label" 
+        },
+        { 
+          "value": "bottom", 
+          "label": "t:sections.brand_marquee.settings.logo_position.options__3.label" 
+        },
+        { 
+          "value": "left", 
+          "label": "t:sections.brand_marquee.settings.logo_position.options__4.label" 
+        },
+        { 
+          "value": "right", 
+          "label": "t:sections.brand_marquee.settings.logo_position.options__5.label" 
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "logo_gap",
+      "label": "t:sections.brand_marquee.settings.logo_gap.label",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "t:sections.brand_marquee.settings.row_gap.label",
+      "min": 1,
+      "max": 50,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "logo_opacity",
+      "label": "t:sections.brand_marquee.settings.logo_opacity.label",
+      "min": 0.2,
+      "max": 1,
+      "step": 0.1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "t:sections.brand_marquee.settings.speed.label",
+      "min": 10,
+      "max": 200,
+      "step": 2,
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "t:sections.brand_marquee.settings.header_button.content"
+    },    
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "t:sections.brand_marquee.settings.button_label.default",
+      "label": "t:sections.brand_marquee.settings.button_label.label", 
+      "info": "t:sections.brand_marquee.settings.button_label.info"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:sections.brand_marquee.settings.button_link.label"
+    }, 
+    {
+      "type": "header",
+      "content": "t:sections.brand_marquee.settings.header_color.content"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+
+  ],
+
+"blocks": [
+    {
+      "type": "logo",
+      "name": "t:sections.brand_marquee.blocks.logo.name",
+      "settings": [
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_1.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image1",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image1.label"
+        },
+        {
+          "type": "text",
+          "id": "alt1",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt1.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_2.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image2",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image2.label"
+        },
+        {
+          "type": "text",
+          "id": "alt2",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt2.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_3.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image3",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image3.label"
+        },
+        {
+          "type": "text",
+          "id": "alt3",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt3.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_4.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image4",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image4.label"
+        },
+        {
+          "type": "text",
+          "id": "alt4",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt4.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_5.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image5",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image5.label"
+        },
+        {
+          "type": "text",
+          "id": "alt5",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt5.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_6.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image6",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image6.label"
+        },
+        {
+          "type": "text",
+          "id": "alt6",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt6.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_7.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image7",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image7.label"
+        },
+        {
+          "type": "text",
+          "id": "alt7",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt7.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_8.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image8",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image8.label"
+        },
+        {
+          "type": "text",
+          "id": "alt8",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt8.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_9.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image9",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image9.label"
+        },
+        {
+          "type": "text",
+          "id": "alt9",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt9.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_10.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image10",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image10.label"
+        },
+        {
+          "type": "text",
+          "id": "alt10",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt10.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_11.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image11",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image11.label"
+        },
+        {
+          "type": "text",
+          "id": "alt11",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt11.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_12.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image12",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image12.label"
+        },
+        {
+          "type": "text",
+          "id": "alt12",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt12.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_13.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image13",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image13.label"
+        },
+        {
+          "type": "text",
+          "id": "alt13",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt13.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_14.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "t:sections.brand_marquee.blocks.logo.settings.image14.label",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "alt14",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt14.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_15.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image15",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image15.label"
+        },
+        {
+          "type": "text",
+          "id": "alt15",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt15.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_16.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image16",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image16.label"
+        },
+        {
+          "type": "text",
+          "id": "alt16",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt16.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_17.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image17",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image17.label"
+        },
+        {
+          "type": "text",
+          "id": "alt17",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt17.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_18.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image18",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image18.label"
+        },
+        {
+          "type": "text",
+          "id": "alt18",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt18.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_19.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image19",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image19.label"
+        },
+        {
+          "type": "text",
+          "id": "alt19",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt19.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_20.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image20",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image20.label"
+        },
+        {
+          "type": "text",
+          "id": "alt20",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt20.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_21.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image21",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image21.label"
+        },
+        {
+          "type": "text",
+          "id": "alt21",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt21.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_22.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image22",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image22.label"
+        },
+        {
+          "type": "text",
+          "id": "alt22",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt22.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_23.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image23",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image23.label"
+        },
+        {
+          "type": "text",
+          "id": "alt23",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt23.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_24.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image24",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image24.label"
+        },
+        {
+          "type": "text",
+          "id": "alt24",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt24.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_25.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image25",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image25.label"
+        },
+        {
+          "type": "text",
+          "id": "alt25",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt25.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_26.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image26",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image26.label"
+        },
+        {
+          "type": "text",
+          "id": "alt26",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt26.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_27.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image27",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image27.label"
+        },
+        {
+          "type": "text",
+          "id": "alt27",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt27.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_28.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image28",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image28.label"
+        },
+        {
+          "type": "text",
+          "id": "alt28",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt28.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_29.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image29",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image29.label"
+        },
+        {
+          "type": "text",
+          "id": "alt29",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt29.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.logo.settings.header_button_30.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image30",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.image30.label"
+        },
+        {
+          "type": "text",
+          "id": "alt30",
+          "label": "t:sections.brand_marquee.blocks.logo.settings.alt30.label"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "t:sections.brand_marquee.blocks.image.name",
+      "settings": [
+                {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_1.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image1",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image1.label"
+        },
+        {
+          "type": "text",
+          "id": "alt1",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt1.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_2.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image2",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image2.label"
+        },
+        {
+          "type": "text",
+          "id": "alt2",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt2.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_3.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image3",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image3.label"
+        },
+        {
+          "type": "text",
+          "id": "alt3",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt3.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_4.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image4",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image4.label"
+        },
+        {
+          "type": "text",
+          "id": "alt4",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt4.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_5.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image5",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image5.label"
+        },
+        {
+          "type": "text",
+          "id": "alt5",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt5.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_6.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image6",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image6.label"
+        },
+        {
+          "type": "text",
+          "id": "alt6",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt6.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_7.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image7",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image7.label"
+        },
+        {
+          "type": "text",
+          "id": "alt7",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt7.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_8.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image8",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image8.label"
+        },
+        {
+          "type": "text",
+          "id": "alt8",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt8.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_9.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image9",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image9.label"
+        },
+        {
+          "type": "text",
+          "id": "alt9",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt9.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_10.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image10",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image10.label"
+        },
+        {
+          "type": "text",
+          "id": "alt10",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt10.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_11.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image11",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image11.label"
+        },
+        {
+          "type": "text",
+          "id": "alt11",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt11.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_12.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image12",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image12.label"
+        },
+        {
+          "type": "text",
+          "id": "alt12",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt12.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_13.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image13",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image13.label"
+        },
+        {
+          "type": "text",
+          "id": "alt13",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt13.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_14.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "t:sections.brand_marquee.blocks.image.settings.image14.label",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "alt14",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt14.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_15.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image15",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image15.label"
+        },
+        {
+          "type": "text",
+          "id": "alt15",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt15.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_16.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image16",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image16.label"
+        },
+        {
+          "type": "text",
+          "id": "alt16",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt16.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_17.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image17",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image17.label"
+        },
+        {
+          "type": "text",
+          "id": "alt17",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt17.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_18.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image18",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image18.label"
+        },
+        {
+          "type": "text",
+          "id": "alt18",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt18.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_19.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image19",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image19.label"
+        },
+        {
+          "type": "text",
+          "id": "alt19",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt19.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_20.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image20",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image20.label"
+        },
+        {
+          "type": "text",
+          "id": "alt20",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt20.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_21.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image21",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image21.label"
+        },
+        {
+          "type": "text",
+          "id": "alt21",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt21.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_22.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image22",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image22.label"
+        },
+        {
+          "type": "text",
+          "id": "alt22",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt22.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_23.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image23",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image23.label"
+        },
+        {
+          "type": "text",
+          "id": "alt23",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt23.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_24.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image24",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image24.label"
+        },
+        {
+          "type": "text",
+          "id": "alt24",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt24.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_25.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image25",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image25.label"
+        },
+        {
+          "type": "text",
+          "id": "alt25",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt25.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_26.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image26",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image26.label"
+        },
+        {
+          "type": "text",
+          "id": "alt26",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt26.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_27.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image27",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image27.label"
+        },
+        {
+          "type": "text",
+          "id": "alt27",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt27.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_28.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image28",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image28.label"
+        },
+        {
+          "type": "text",
+          "id": "alt28",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt28.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_29.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image29",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image29.label"
+        },
+        {
+          "type": "text",
+          "id": "alt29",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt29.label"
+        },
+        {
+          "type": "header",
+          "content": "t:sections.brand_marquee.blocks.image.settings.header_button_30.content"
+        },
+        {
+          "type": "image_picker",
+          "id": "image30",
+          "label": "t:sections.brand_marquee.blocks.image.settings.image30.label"
+        },
+        {
+          "type": "text",
+          "id": "alt30",
+          "label": "t:sections.brand_marquee.blocks.image.settings.alt30.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.brand_marquee.name",
+      "blocks": [
+        { 
+          "type": "logo" 
+        },
+        { 
+          "type": "image" 
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} {% endcomment %}

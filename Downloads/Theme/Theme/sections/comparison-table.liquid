@@ -1,0 +1,406 @@
+{% comment %} {%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="comparison-table {{ section.settings.custom_class }} color-{{ section.settings.color_scheme }} isolate gradient">
+
+    <div class="page-width section-{{ section.id }}-padding">
+        <div class="collection__title title-wrapper title-wrapper--no-top-margin {% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% endif %}{% if show_desktop_slider %} collection__title--desktop-slider{% endif %}">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="title inline-richtext {{ section.settings.heading_size }} {{ section.settings.heading_alignment }} {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+          {{ section.settings.heading }}
+        </h2>
+      {%- endif -%}
+    </div>
+    <div class="main-table">
+      <table>
+          <thead>
+          <tr>
+              <th></th>
+              {% for block in section.blocks %}
+              {% if block.type == 'column' %}
+                  
+
+                  <th class="{% if block.settings.highlight_column == 'yes' %}highlight{% endif %}">
+                    {% assign product = block.settings.product %}
+
+                    {% if product != blank and product.title != blank %}
+
+                      {% if product.featured_image != blank %}
+                        <div class="compare-image-table"><img 
+  src="{{ product.featured_image | image_url: width: 800 }}"
+  srcset="
+    {{ product.featured_image | image_url: width: 400 }} 400w,
+    {{ product.featured_image | image_url: width: 800 }} 800w,
+    {{ product.featured_image | image_url: width: 1200 }} 1200w
+  "
+  alt="{{ product.title }}"
+></div>
+                      {% else %}
+                        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                      {% endif %}
+
+                      <h4>{{ product.title }}</h4>
+
+                    {% else %}
+
+                      {% if product == blank or product.title == blank %}
+                        <div class="compare-image-table placeholder">{{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+                        <h4>{{ 'onboarding.product_title' | t }}</h4>
+                      {% endif %}
+
+                    {% endif %}
+                  </th>
+              {% endif %}
+              {% endfor %}
+          </tr>
+          </thead>
+          <tbody>
+  {% assign columns = section.blocks | where: "type", "column" %}
+  {% assign feature_blocks = section.blocks | where: "type", "feature" %}
+
+  {% for block in feature_blocks %}
+    <tr>
+      <td class="feature-title">
+        <p>{{ block.settings.feature_name }}</p>
+      </td>
+
+      {% assign values = block.settings.feature_values | split: "," %}
+
+      {% for col in columns %}
+        {% assign value = values[forloop.index0] | strip %}
+        <td>
+          {% if value == 'yes' %}
+            <span class="icon yes">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="51" viewBox="0 0 50 51" fill="none">
+      <path d="M24.9993 46.3332C36.5053 46.3332 45.8327 37.0058 45.8327 25.4998C45.8327 13.9939 36.5053 4.6665 24.9993 4.6665C13.4934 4.6665 4.16602 13.9939 4.16602 25.4998C4.16602 37.0058 13.4934 46.3332 24.9993 46.3332Z" stroke="#225836" stroke-width="4.16667" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M18.75 25.4997L22.9167 29.6663L31.25 21.333" stroke="#225836" stroke-width="4.16667" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+            </span>
+
+          {% elsif value == 'no' %}
+            <span class="icon no">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="51" viewBox="0 0 50 51" fill="none">
+      <path d="M25.0013 46.3332C36.5072 46.3332 45.8346 37.0058 45.8346 25.4998C45.8346 13.9939 36.5072 4.6665 25.0013 4.6665C13.4954 4.6665 4.16797 13.9939 4.16797 25.4998C4.16797 37.0058 13.4954 46.3332 25.0013 46.3332Z" stroke="#582222" stroke-width="4.16667" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path d="M31.25 19.25L18.75 31.75M18.75 19.25L31.25 31.75" stroke="#582222" stroke-width="4.16667" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+            </span>
+
+          {% else %}
+            <span class="icon maybe">
+              <svg xmlns="http://www.w3.org/2000/svg" width="50" height="51" viewBox="0 0 50 51" fill="none">
+      <g opacity="0.5">
+          <path d="M24.9994 46.3332C36.5053 46.3332 45.8327 37.0058 45.8327 25.4998C45.8327 13.9939 36.5053 4.6665 24.9994 4.6665C13.4934 4.6665 4.16602 13.9939 4.16602 25.4998C4.16602 37.0058 13.4934 46.3332 24.9994 46.3332Z" stroke="#131313" stroke-width="4.16667" stroke-linecap="round" stroke-linejoin="round"></path>
+          <path d="M18.9355 19.2502C19.4253 17.8579 20.3921 16.6838 21.6646 15.9359C22.9371 15.188 24.4332 14.9147 25.888 15.1642C27.3428 15.4137 28.6622 16.1701 29.6128 17.2992C30.5633 18.4284 31.0836 19.8575 31.0814 21.3335C31.0814 25.5002 24.8314 27.5835 24.8314 27.5835M24.998 35.9169H25.0189" stroke="#131313" stroke-width="4.16667" stroke-linecap="round" stroke-linejoin="round"></path>
+      </g>
+      </svg>
+            </span>
+          {% endif %}
+        </td>
+      {% endfor %}
+    </tr>
+
+    {% if forloop.last %}
+      <tr>
+        <td></td>
+        <td class="empty-block"></td>
+        {% for col in columns offset:4 %}
+          <td></td>
+        {% endfor %}
+      </tr>
+    {% endif %}
+
+  {% endfor %}
+</tbody>
+      </table>
+    </div>
+</div>
+</div>
+<style>
+  .comparison-table table {
+  border-collapse: collapse;
+  width:100%;
+  box-shadow: unset;
+      border-style: unset;
+}
+body .comparison-table th:first-child {
+    padding: unset;
+    border: unset;
+}
+body .comparison-table th, 
+body .comparison-table td {
+  border: 1px dashed rgba(var(--color-foreground));
+  padding: 40px 20px;
+}
+body .comparison-table tr td:nth-child(2),
+.comparison-table th.highlight  {
+   background-color:{{ section.settings.highlight_color }};
+}
+body .comparison-table th:not(:nth-child(2)) {
+    border-top: unset;
+}
+body .comparison-table td:not(:first-child) {
+    text-align: center;
+}
+body .comparison-table td span.icon svg{
+    width: 50px;
+    height: 50px;
+}
+.comparison-table th img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    object-position: center center;
+}
+.comparison-table th h4 {
+    margin: 15px 0 0 0;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+.feature-title p {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+span.icon {
+    display: inline-flex;
+}
+body .comparison-table tr:last-child td:first-child {
+    border: unset;
+    padding: unset;
+}
+
+body .comparison-table tr .empty-block {
+    border-top: unset;
+    padding:15px;
+}
+body .comparison-table tr:nth-last-child(2) td:nth-child(2) {
+    border: unset !important;
+}
+body .comparison-table td span.icon svg path{
+    stroke:rgba(var(--color-foreground));
+}
+body .comparison-table .placeholder-svg {
+    fill: rgba(var(--color-foreground));
+}
+.compare-image-table {
+    position: relative;
+}
+.compare-image-table {
+    padding-bottom: 100%;
+}
+
+.compare-image-table svg {
+    display: block;
+    max-width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+@media(max-width:820px){
+  .main-table {
+        overflow-x: auto;
+    }
+    .comparison-table table {
+        width: 120rem;
+    }
+    body .comparison-table td span.icon svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+@media (max-width: 480px) {
+    body .comparison-table th, body .comparison-table td {
+        padding: 20px 15px;
+    }
+}
+</style>
+{% schema %}
+{
+  "name": "t:sections.product-compare-table.name",
+  "settings": [
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "t:sections.product-compare-table.settings.custom_class.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "highlight_color",
+      "label": "t:sections.product-compare-table.settings.highlight_color.label"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:sections.product-compare-table.settings.heading.label",
+      "default": "t:sections.product-compare-table.settings.heading.default"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        },
+        {
+          "value": "hxl",
+          "label": "t:sections.all.heading_size.options__4.label"
+        },
+        {
+          "value": "hxxl",
+          "label": "t:sections.all.heading_size.options__5.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:sections.product-compare-table.settings.heading_alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:sections.product-compare-table.settings.heading_alignment.options__2.label"
+        },
+        {
+          "value": "right",
+          "label": "t:sections.product-compare-table.settings.heading_alignment.options__3.label"
+        }
+      ],
+      "default": "center",
+      "label": "t:sections.product-compare-table.settings.heading_alignment.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "t:sections.product-compare-table.blocks.feature.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "feature_name",
+          "label": "t:sections.product-compare-table.blocks.feature.settings.feature_name.label",
+          "default": "t:sections.product-compare-table.blocks.feature.settings.feature_name.default"
+        },
+        {
+          "type": "text",
+          "id": "feature_values",
+          "label": "t:sections.product-compare-table.blocks.feature.settings.feature_values.label",
+          "default": "t:sections.product-compare-table.blocks.feature.settings.feature_values.default"
+        }
+      ]
+    },
+    {
+      "type": "column",
+      "name": "t:sections.product-compare-table.blocks.column.name",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "t:sections.product-compare-table.blocks.column.settings.product.label"
+        },
+        {
+          "type": "select",
+          "id": "highlight_column",
+          "label": "t:sections.product-compare-table.blocks.column.settings.highlight_column.label",
+          "options": [
+            { 
+              "value": "no", 
+              "label": "t:sections.product-compare-table.blocks.column.settings.highlight_column.options__1.label" 
+            },
+            { 
+              "value": "yes", 
+              "label": "t:sections.product-compare-table.blocks.column.settings.highlight_column.options__2.label" 
+            }
+          ],
+          "default": "no"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.product-compare-table.name",
+      "blocks": [
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        },
+        {
+          "type": "feature"
+        },
+        {
+          "type": "column"
+        },
+        {
+          "type": "column"
+        },
+        {
+          "type": "column"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} {% endcomment %}

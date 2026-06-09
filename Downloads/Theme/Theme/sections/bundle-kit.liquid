@@ -1,0 +1,578 @@
+{% comment %} <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.all.min.js"></script>
+
+<style>
+
+div#progressBar {
+  display: block;
+}
+
+.bundle-progress {
+  height: 8px;
+  overflow: hidden;
+  background: rgba(var(--color-foreground), 0.15);
+  border-radius: 0.5rem;
+}
+
+
+.bundle-progress-bar {
+  height: 100%;
+  background: rgba(var(--color-foreground));
+  width: 100%;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bundle-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.bundle-select {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(var(--color-background));
+    color: rgba(var(--color-foreground));
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+.bundle-select span.checkmark svg {
+    width: 20px;
+    height: 20px;
+}
+
+.bundle-select .checkmark svg path {
+    stroke:rgba(var(--color-foreground));
+}
+.bundle-card.selected .bundle-select {
+  display: flex;
+}
+span.checkmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bundle-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 35px 0;
+  min-height: 50px;
+}
+
+.bundle-card{
+  position:relative;
+}
+.bundle-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #ddd;
+    padding: 6px 14px;
+    transition: all 0.2s;
+}
+
+.bundle-pill:hover {
+  background: #eee;
+}
+
+
+.bundle-pill img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+
+.progress-and-count {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.progress-and-count .bundle-count {
+    text-align: center;
+}
+
+@keyframes rotateBorder {
+  to {
+    --angle: 360deg;
+  }
+}
+</style>
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} isolate gradient section-{{ section.id }}-padding {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+<div class="bundle-wrapper page-width">
+  <div class="bundle-header">
+  <div class="bundle-title-desc {{ section.settings.content_head_alignment }}">
+      {%- if section.settings.heading != blank -%}
+          <h2 class="title inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+            {{ section.settings.heading }}
+          </h2>
+        {%- endif -%}
+      <p>Select {{ section.settings.bundle_limit }} products and enjoy exclusive savings</p>
+      </div>
+    <div class="progress-and-count">
+        <div class="bundle-progress">
+          <div class="bundle-progress-bar" id="progressBar"></div>
+        </div>
+        <div class="bundle-count">
+          <span id="count">0</span> / {{ section.settings.bundle_limit }} Selected
+        </div>
+      </div>
+  </div>
+
+
+  <div class="bundle-selected" id="selectedProducts"></div>
+
+
+  {% assign selected_collection = section.settings.custom_collection %}
+
+{% if selected_collection != blank %}
+  <div class="bundle-grid grid grid--{{ section.settings.columns_mobile }}-col-tablet-down grid--{{ section.settings.columns_desktop }}-col-desktop">
+    
+    {% for product in selected_collection.products limit: section.settings.product_limit %}
+      
+      <div 
+        class="bundle-card grid__item"
+        data-id="{{ product.selected_or_first_available_variant.id }}"
+        data-title="{{ product.title | escape }}"
+        data-price="{{ product.price | divided_by: 100.0 }}"
+      >
+        {% render 'card-product',
+          card_product: product,
+          media_aspect_ratio: section.settings.image_ratio,
+          image_shape: section.settings.image_shape,
+          lazy_load: true,
+          show_secondary_image: section.settings.show_secondary_image,
+          show_vendor: section.settings.show_vendor,
+          show_rating: section.settings.show_rating,
+          skip_styles: false,
+          section_id: section.id,
+          quick_add: section.settings.quick_add
+        %}
+        <div class="bundle-select">
+          <span class="checkmark"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 12.6111L8.92308 17.5L20 6.5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></span>
+        </div>
+      </div>
+
+    {% endfor %}
+
+  </div>
+
+{% else %}
+  <p style="text-align:center; color:#999;">
+    Please select a collection in the theme editor.
+  </p>
+{% endif %}
+
+
+  <div class="bundle-summary" id="bundleSummary" style="display:none;">
+    <div class="bundle-total">Total: <span id="totalPrice">$0.00</span></div>
+    <div class="bundle-savings" id="savingsText">You save <span id="savingsAmount">$0.00</span> (15% off)</div>
+  </div>
+
+
+  <div class="bundle-footer center">
+    <button class="bundle-btn button button--primary" id="addBundle" disabled>Add Bundle to Cart</button>
+  </div>
+</div>
+</div>
+
+<div id="bundleToast">
+  <div id="bundleToastMessage"></div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  let selected = [];
+  const maxItems = {{ section.settings.bundle_limit | default: 3 }};
+  const addButton = document.getElementById("addBundle");
+
+  function showBundleToast(message, type = "success", duration = 3000) {
+    const toastContainer = document.getElementById('bundleToast');
+    const toastMessage = document.getElementById('bundleToastMessage');
+
+    if (!toastContainer || !toastMessage) return;
+
+    toastMessage.textContent = message;
+    toastMessage.style.background = (type === "success") ? "#10b981" : "#ff4d4f";
+
+    toastContainer.style.display = 'block';
+    toastContainer.style.opacity = '0';
+
+    setTimeout(() => toastContainer.style.opacity = '1', 10);
+
+    setTimeout(() => {
+      toastContainer.style.opacity = '0';
+      setTimeout(() => toastContainer.style.display = 'none', 300);
+    }, duration);
+  }
+
+  function showSuccessSwal() {
+    if (typeof Swal === "undefined") return;
+
+    Swal.fire({
+      title: "Bundle Added Successfully!",
+      text: `Your ${maxItems}-product bundle has been added to the cart.`,
+      icon: "success",
+      confirmButtonText: "View Cart",
+      confirmButtonColor: "{{ section.settings.accent_color }}",
+      timer: 4000,
+      timerProgressBar: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = '/cart';
+      }
+    });
+  }
+
+  function calculateTotal() {
+    return selected.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
+  }
+
+  function updateUI() {
+    const countEl = document.getElementById("count");
+    const progressEl = document.getElementById("progressBar");
+    const summaryEl = document.getElementById("bundleSummary");
+    const totalEl = document.getElementById("totalPrice");
+    const savingsEl = document.getElementById("savingsAmount");
+
+    if (countEl) countEl.innerText = selected.length;
+    if (progressEl) progressEl.style.width = `${(selected.length / maxItems) * 100}%`;
+
+    const container = document.getElementById("selectedProducts");
+    if (container) {
+      container.innerHTML = "";
+
+      selected.forEach((item, index) => {
+        const pill = document.createElement("div");
+        pill.className = "bundle-pill";
+        pill.innerHTML = `
+          <img src="${item.image}" alt="">
+          ${item.title}
+          <span style="margin-left:auto; cursor:pointer;" onclick="removeItem(${index})">×</span>
+        `;
+        container.appendChild(pill);
+      });
+    }
+
+    document.querySelectorAll(".bundle-card").forEach(card => {
+      const id = card.dataset.id;
+      const isSelected = selected.some(p => p.id === id);
+
+      card.classList.toggle("selected", isSelected);
+
+      const checkbox = card.querySelector(".bundle-checkbox");
+      if (checkbox) checkbox.checked = isSelected;
+    });
+
+    if (summaryEl && totalEl && savingsEl) {
+      if (selected.length > 0) {
+        summaryEl.style.display = "block";
+        const total = calculateTotal();
+        totalEl.textContent = "$" + total.toFixed(2);
+        savingsEl.textContent = "$" + (total * 0.15).toFixed(2);
+      } else {
+        summaryEl.style.display = "none";
+      }
+    }
+
+    if (addButton) {
+      addButton.disabled = selected.length !== maxItems;
+    }
+  }
+
+  window.removeItem = function(index) {
+    selected.splice(index, 1);
+    updateUI();
+  };
+
+  document.querySelectorAll(".bundle-card").forEach(card => {
+
+    card.addEventListener("click", function(e) {
+
+      if (e.target.closest("button, a, input")) return;
+
+      const id = this.dataset.id;
+      const title = this.dataset.title;
+      const price = this.dataset.price;
+
+      const img = this.querySelector("img");
+      const image = img ? img.src : "";
+
+      const existsIndex = selected.findIndex(p => p.id === id);
+
+      if (existsIndex > -1) {
+        selected.splice(existsIndex, 1);
+      } else {
+        if (selected.length >= maxItems) {
+          showBundleToast(`Max ${maxItems} products allowed`, "error");
+          return;
+        }
+        selected.push({ id, title, price, image });
+      }
+
+      updateUI();
+    });
+  });
+
+  addButton?.addEventListener("click", async function() {
+
+    if (selected.length !== maxItems) return;
+
+    const originalText = addButton.textContent;
+    addButton.textContent = "Adding...";
+    addButton.disabled = true;
+
+    const items = selected.map(p => ({
+      id: p.id,
+      quantity: 1
+    }));
+
+    try {
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items })
+      });
+
+      if (!res.ok) throw new Error();
+
+      showSuccessSwal();
+
+
+      document.body.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+
+
+      const drawer = document.querySelector('cart-drawer, #cart-drawer, .cart-drawer');
+
+      if (drawer) {
+        drawer.classList.remove('is-empty', 'hidden');
+        drawer.classList.add('active', 'is-open');
+
+        if (typeof drawer.open === 'function') {
+          drawer.open();
+        }
+      }
+
+
+      const html = await fetch('/cart?view=drawer').then(r => r.text());
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const newItems = doc.querySelector('cart-drawer-items, .cart-items, #CartItems, .drawer__inner');
+      const targetItems = document.querySelector('cart-drawer-items, .cart-items, #CartItems, .drawer__inner');
+
+      if (newItems && targetItems) {
+        targetItems.innerHTML = newItems.innerHTML;
+      }
+
+      const newBubble = doc.querySelector('#cart-icon-bubble, .cart-count-bubble, [data-cart-count]');
+      const targetBubble = document.querySelector('#cart-icon-bubble, .cart-count-bubble, [data-cart-count]');
+
+      if (newBubble && targetBubble) {
+        targetBubble.outerHTML = newBubble.outerHTML;
+      }
+
+    } catch (err) {
+      console.error(err);
+      showBundleToast("Failed to add bundle", "error");
+    } finally {
+      addButton.textContent = originalText;
+      addButton.disabled = false;
+    }
+  });
+
+  updateUI();
+});
+</script>
+
+
+{% schema %}
+{
+  "name": "Bundle Builder Premium",
+  "settings": [
+  {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "info": "t:sections.all.colors.has_cards_info",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.featured-collection.settings.header_text.content"
+    },   
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "default": "t:sections.featured-collection.settings.title.default",
+      "label": "t:sections.featured-collection.settings.title.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        },
+        {
+          "value": "hxl",
+          "label": "t:sections.all.heading_size.options__4.label"
+        },
+        {
+          "value": "hxxl",
+          "label": "t:sections.all.heading_size.options__5.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "content_head_alignment",
+      "options": [
+        { 
+          "value": "left", 
+          "label": "t:sections.after-before.settings.alignment.options__1.label" 
+        },
+        { 
+          "value": "center", 
+          "label": "t:sections.after-before.settings.alignment.options__2.label" 
+        },
+        { 
+          "value": "right", 
+          "label": "t:sections.after-before.settings.alignment.options__3.label" 
+        }
+      ],
+      "default": "center",
+      "label": "t:sections.after-before.settings.alignment.label"
+    },
+    {
+      "type": "collection",
+      "id": "custom_collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "range",
+      "id": "bundle_limit",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "label": "Bundle Size"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 4,
+      "max": 50,
+      "step": 2,
+      "default": 12,
+      "label": "Products to Show"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },     
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "label": "Columns"
+    },
+    {
+      "type": "header",
+      "content": "Mobile layout"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1",
+      "label": "Columns"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle Builder Premium"
+    }
+  ]
+}
+{% endschema %} {% endcomment %}

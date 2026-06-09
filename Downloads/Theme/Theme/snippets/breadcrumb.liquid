@@ -1,0 +1,47 @@
+<style>
+  .brenav, .brenav a, .brenav span {
+      padding: 1.5rem 0;
+      font-size: 1.4rem;
+      margin-bottom: 0;
+      text-decoration: none;
+      color: rgba(var(--color-foreground));
+  }
+  .brenav span{
+    color: rgba(var(--color-foreground), 0.75);
+  }
+</style>
+
+<nav class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+  <a href="{{ routes.root_url }}">Home</a>
+
+  {% if request.page_type == 'collection' and collection %}
+    <span> / </span>
+    <span>{{ collection.title }}</span>
+  {% endif %}
+
+  {% if request.page_type == 'product' %}
+    {% if collection %}
+      <span> / </span>
+      <a href="{{ collection.url }}">{{ collection.title }}</a>
+    {% endif %}
+    <span> / </span>
+    <span>{{ product.title }}</span>
+  {% endif %}
+
+  {% if request.page_type == 'page' %}
+    <span> / </span>
+    <span>{{ page.title }}</span>
+  {% endif %}
+
+  {% if request.page_type == 'blog' %}
+    <span> / </span>
+    <span>{{ blog.title }}</span>
+  {% endif %}
+
+  {% if request.page_type == 'article' %}
+    <span> / </span>
+    <a href="{{ blog.url }}">{{ blog.title }}</a>
+    <span> / </span>
+    <span>{{ article.title }}</span>
+  {% endif %}
+</nav>

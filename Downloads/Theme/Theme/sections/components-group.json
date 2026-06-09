@@ -1,0 +1,51 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "Components",
+  "type": "custom.components",
+  "sections": {
+    "components": {
+      "type": "components",
+      "blocks": {
+        "cookie_banner_ijRGL6": {
+          "type": "cookie_banner",
+          "settings": {
+            "cookie_text": "<p>We use cookies to provide you with the best possible online experience. <a href=\"/pages/privacy\" title=\"Privacy\">Learn More</a></p>",
+            "close_btn_text": "Got it!",
+            "color_scheme": "scheme-4"
+          }
+        },
+        "newsletter_1": {
+          "type": "newsletter_popup",
+          "settings": {
+            "enable_popup": true,
+            "image": "shopify://shop_images/Rectangle_151.png",
+            "heading": "Let's stay in touch",
+            "heading_size": "h2",
+            "sub_text": "<p>Sign up to our newsletter and never miss out on discounts, new arrivals, the latest updates AND get 10% off your first purchase 🙂</p>",
+            "text_style": "body",
+            "extra_text": "<p>Your information will never be shared with a third party.</p>",
+            "enable_remember": true,
+            "force_show_every_time": false,
+            "color_scheme": "scheme-5"
+          }
+        }
+      },
+      "block_order": [
+        "cookie_banner_ijRGL6",
+        "newsletter_1"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "components"
+  ]
+}

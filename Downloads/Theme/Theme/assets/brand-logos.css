@@ -1,0 +1,113 @@
+.marquee{
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.flex-horizontal{
+    display:flex;
+    gap:var(--logo-gap);
+    animation: marquee-left var(--marquee-speed) linear infinite;
+}
+
+.track-horizontal.backward-logos .flex-horizontal{
+    animation: marquee-right var(--marquee-speed) linear infinite;
+}
+.track-horizontal {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    white-space: nowrap;
+}
+.logo-bars img,
+.logo-bars svg{
+    height:var(--logo-height);
+    width:var(--logo-width);
+    opacity:var(--logo-opacity);
+    object-fit: var(--logo-fit);
+  object-position: var(--logo-position);
+    transition:.3s;
+}
+
+.logo-bars img:hover{
+    opacity:1;
+    transform:scale(1.05);
+}
+
+.logo-bars {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    gap:var(--row-gap);
+}
+
+@keyframes marquee-left{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-90%); }
+}
+
+@keyframes marquee-right{
+    from{ transform:translateX(-90%); }
+    to{ transform:translateX(0); }
+    }
+
+@media screen and (min-width: 750px) {
+    .brand-marquee .button {
+        margin-top: 4rem;
+    }
+}
+.brand-marquee .button {
+    margin-top: 1.5rem;
+}
+.marquee{
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.flex-horizontal{
+    display:flex;
+    gap:var(--logo-gap);
+    animation: marquee-left var(--marquee-speed) linear infinite;
+}
+
+.track-horizontal.backward-logos .flex-horizontal{
+    animation: marquee-right var(--marquee-speed) linear infinite;
+}
+
+.marquee img{
+    height:var(--logo-height);
+    width:var(--logo-width);
+    opacity:var(--logo-opacity);
+    object-fit: var(--logo-fit);
+  object-position: var(--logo-position);
+    transition:.3s;
+}
+
+.marquee img:hover{
+    opacity:1;
+    transform:scale(1.05);
+}
+
+.logo-bars {
+    display: flex;
+    flex-direction: column;
+    gap:var(--row-gap);
+}
+
+@keyframes marquee-left{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-90%); }
+}
+
+@keyframes marquee-right{
+    from{ transform:translateX(-90%); }
+    to{ transform:translateX(0); }
+    }
+
+@media screen and (min-width: 750px) {
+    .brand-marquee .button {
+        margin-top: 4rem;
+    }
+}
+.brand-marquee .button {
+    margin-top: 1.5rem;
+}
