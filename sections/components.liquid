@@ -1,0 +1,606 @@
+{% comment %} {% for block in section.blocks %}
+  
+  {% case block.type %}
+
+  {% when 'newsletter_popup' %}
+    {% if block.settings.enable_popup %}
+      
+      <div id="newsletter-popup-{{ block.id }}" class="newsletter-popup color-{{ block.settings.color_scheme }} gradient" style="display:none;">
+        
+        <div class="newsletter-inner">
+          <span class="close-newsletter"><svg class="t4smfp-icon-close" role="presentation" viewBox="0 0 16 14"><path d="M15 0L1 14m14 0L1 0" stroke="currentColor" fill="none" fill-rule="evenodd"></path></svg></span>
+<div class="newsletter-wrapper">
+          {% if block.settings.image != blank %}
+            <div class="newsletter-left media media--transparent">
+              <img src="{{ block.settings.image | image_url: width: 800 }}">
+            </div>
+          {% endif %}
+
+          <div class="newsletter-right {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+            <div class="newsletter-right-inner center">
+            {%- if block.settings.heading != blank -%}
+              <h2 class="title inline-richtext {{ block.settings.heading_size }}" {{ block.shopify_attributes }}>{{ block.settings.heading }}</h2>
+            {%- endif -%}
+            {%- if block.settings.sub_text != blank -%}
+              <div class="rte {{ block.settings.text_style }}" {{ block.shopify_attributes }}>{{ block.settings.sub_text }}</div>
+            {%- endif -%}
+
+            <div {{ block.shopify_attributes }}>
+            {% form 'customer', class: 'newsletter-form' %}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <div
+                class="newsletter-form__field-wrapper"
+                {% if settings.animations_reveal_on_scroll %}
+                  data-cascade
+                  style="--animation-order: {{ forloop.index }};"
+                {% endif %}
+              >
+                <div class="field">
+                  <input
+                    id="NewsletterForm--{{ section.id }}"
+                    type="email"
+                    name="contact[email]"
+                    class="field__input"
+                    value="{{ form.email }}"
+                    aria-required="true"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    autocomplete="email"
+                    {% if form.errors %}
+                      autofocus
+                      aria-invalid="true"
+                      aria-describedby="Newsletter-error--{{ section.id }}"
+                    {% elsif form.posted_successfully? %}
+                      aria-describedby="Newsletter-success--{{ section.id }}"
+                    {% endif %}
+                    placeholder="{{ 'newsletter.label' | t }}"
+                    required
+                  >
+                  <label class="field__label" for="NewsletterForm--{{ section.id }}">
+                    {{ 'newsletter.label' | t }}
+                  </label>
+                  <button
+                    type="submit"
+                    class="newsletter-form__button field__button"
+                    name="commit"
+                    id="Subscribe"
+                    aria-label="{{ 'newsletter.button_label' | t }}"
+                  >
+                    <span class="svg-wrapper">
+                      {{- 'icon-arrow.svg' | inline_asset_content -}}
+                    </span>
+                  </button>
+                </div>
+                {%- if form.errors -%}
+                  <small class="newsletter-form__message form__message" id="Newsletter-error--{{ section.id }}">
+                    <span class="svg-wrapper">
+                      {{- 'icon-error.svg' | inline_asset_content -}}
+                    </span>
+                    {{- form.errors.translated_fields.email | capitalize }}
+                    {{ form.errors.messages.email -}}
+                  </small>
+                {%- endif -%}
+              </div>
+              {%- if form.posted_successfully? -%}
+                <h3
+                  class="newsletter-form__message newsletter-form__message--success form__message"
+                  id="Newsletter-success--{{ section.id }}"
+                  tabindex="-1"
+                  autofocus
+                >
+                  <span class="svg-wrapper">
+                    {{- 'icon-success.svg' | inline_asset_content -}}
+                  </span>
+                  {{- 'newsletter.success' | t }}
+                </h3>
+              {%- endif -%}
+            {% endform %}
+            {% if block.settings.enable_remember %}
+              <div class="popup-extra center">
+                <div class="popup-info rte">{{ block.settings.extra_text }}</div>
+                <div class="popup-extra-acceptance">
+                  <input type="checkbox" id="dont-show-{{ block.id }}">
+                  <label class="popup-consent center">
+                    Do not show this again
+                  </label>
+                  <svg class="t4s-dn t4s-icon_checked" viewBox="0 0 24 24"><path d="M9 20l-7-7 3-3 4 4L19 4l3 3z"></path></svg>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          </div>
+        </div>
+        </div>
+        </div>
+
+      </div>
+<style>
+  .newsletter-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: rgb(var(--color-foreground), 0.7);
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    z-index: 999;
+  }
+
+
+  .newsletter-popup.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+.newsletter-left:before {
+    content: "";
+    padding-top: 100%;
+    display: block;
+}
+  .newsletter-inner {
+    background-color: rgb(var(--color-background));
+    max-width: 850px;
+    width: 100%;
+    margin: 20px auto;
+    transform: translateX(-60px);
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
+  }
+
+
+  .newsletter-popup.active .newsletter-inner {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+
+  .newsletter-popup.closing .newsletter-inner {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+
+
+  .newsletter-popup.closing {
+    opacity: 0;
+  }
+
+
+  .close-newsletter {
+      position: absolute;
+      top: -14px;
+      right: -10px;
+      background-color: rgb(var(--color-foreground));
+      border-radius: 100%;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: rgba(var(--color-background));
+      z-index: 1;
+  }
+  .close-newsletter .t4smfp-icon-close {
+      width: 12px;
+      height: 12px;
+      stroke-width: 2.5px;
+  }
+  .newsletter-wrapper {
+    display: flex;
+}
+
+.newsletter-left {
+    width: 50%;
+    flex: 0 0 auto;
+    max-width: 100%;
+}
+
+.newsletter-right {
+    width: 50%;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+}
+.newsletter-right-inner .inline-richtext {
+    margin: 0 0 1rem 0;
+}
+.newsletter-right-inner >.rte {
+    margin-bottom: 1.5rem;
+}
+.newsletter-right-inner {
+    padding: 30px;
+    width: 100%;
+}
+.popup-extra {
+    padding-top: 0.5rem;
+}
+
+.popup-info {
+    font-size: 1.2rem;
+}
+
+.popup-extra-acceptance label::before{
+    content: '';
+    display: inline-block;
+    margin-right:5px;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border: 1px solid rgb(var(--color-foreground));
+    background-color: rgb(var(--color-background));
+    box-shadow: 0 1px rgb(212 214 216 / 40%);
+    border-radius: 2px;
+    -webkit-appearance: none;
+    position: relative;
+    top: 3px;
+    box-shadow: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transition: .2s ease-in-out;
+}
+.popup-extra-acceptance input {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    margin: 0;
+    height: 100%;
+}
+
+.popup-extra-acceptance input:checked + label::before {
+    background: rgb(var(--color-foreground));
+    border-color:rgb(var(--color-foreground));
+}
+.popup-extra-acceptance input:checked~svg {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+}
+.popup-extra-acceptance input~svg {
+    display: block;
+    width: 12px;
+    height: 12px;
+    fill: rgb(var(--color-background));
+    position: absolute;
+    top: 5px;
+    left: 2px;
+    pointer-events: none;
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    -webkit-transition: .25s ease-in-out;
+    transition: .25s ease-in-out;
+}
+.newsletter-popup {
+    padding: 0px 15px;
+}
+.popup-extra-acceptance{
+  position: relative;
+  display: inline-block;
+  font-size: 1.2rem;
+}
+@media(max-width:820px){
+  .newsletter-wrapper {
+      flex-direction: column;
+  }
+  .newsletter-left {
+      width: 100%;
+  }
+  .newsletter-right {
+      width: 100%;
+  }
+  .newsletter-left {
+      max-height: 300px;
+  }
+  .newsletter-left img{
+    object-position: top center;
+  }
+  .newsletter-right-inner {
+      padding: 20px;
+  }
+}
+</style>
+      <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const popup = document.getElementById('newsletter-popup-{{ block.id }}');
+  if (!popup) return;
+
+  const storageKey = "newsletter_popup_{{ block.id }}"; 
+  const sessionKey = "newsletter_session_{{ block.id }}"; 
+
+  const enableRemember = {{ block.settings.enable_remember | json }};
+  const forceShow = {{ block.settings.force_show_every_time | json }};
+
+
+  if (!forceShow && enableRemember && localStorage.getItem(storageKey) === "hidden") {
+    return;
+  }
+
+ 
+  if (!forceShow && sessionStorage.getItem(sessionKey) === "hidden") {
+    return;
+  }
+
+  let shown = false;
+
+  function showPopup() {
+    if (shown) return;
+
+    popup.style.display = 'flex';
+
+    setTimeout(() => {
+      popup.classList.add('active');
+    }, 50);
+
+    shown = true;
+  }
+
+
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 320) {
+      showPopup();
+    }
+  });
+
+
+  popup.querySelector('.close-newsletter').addEventListener('click', function() {
+
+    popup.classList.remove('active');
+    popup.classList.add('closing');
+
+    const checkbox = document.getElementById('dont-show-{{ block.id }}');
+
+    if (enableRemember && !forceShow && checkbox && checkbox.checked) {
+
+      localStorage.setItem(storageKey, "hidden");
+    } else {
+
+      sessionStorage.setItem(sessionKey, "hidden");
+    }
+
+    setTimeout(() => {
+      popup.style.display = 'none';
+      popup.classList.remove('closing');
+    }, 400);
+
+  });
+
+});
+      </script>
+
+    {% endif %}
+
+    {% when 'cookie_banner' %}
+
+      <div class="cookie_banner color-{{ block.settings.color_scheme }} gradient">
+          <div class="cookie-banner-wrapper">
+          <span class="cookie-msg center">
+            {{ block.settings.cookie_text }}
+          </span>
+          <div class="cookie_close">
+            <a href="javascript:void(0)" class="button">{{ block.settings.close_btn_text }}</a>
+          </div>
+        </div>
+      </div>
+  {% endcase %}
+
+{% endfor %}
+<style>
+  /* base state (hidden but ready) */
+.cookie_banner {
+  position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+  opacity: 0;
+  transition: opacity 0.4s ease;
+
+  pointer-events: none;
+  z-index: 999;
+  will-change: transform, opacity;
+}
+
+/* show */
+.cookie_banner.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* hide */
+.cookie_banner.closing {
+  opacity: 0;
+  transform: translateY(60px) scale(0.96);
+}
+.cookie-banner-wrapper {
+    display: flex;
+    align-items: center;
+}
+span.cookie-msg p {
+    margin: 0;
+}
+span.cookie-msg {
+    width: 100%;
+}
+.cookie-msg p, 
+.cookie-msg p a {
+    color: rgb(var(--color-foreground));
+}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  const banner = document.querySelector('.cookie_banner');
+  if (!banner) return;
+
+  const storageKey = "cookie_banner_hidden";
+
+  if (localStorage.getItem(storageKey) === "hidden") return;
+
+  let shown = false;
+
+  function showBanner() {
+    if (shown) return;
+
+    banner.style.display = 'block';
+
+    requestAnimationFrame(() => {
+      banner.classList.add('active');
+    });
+
+    shown = true;
+  }
+
+  // scroll trigger
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 120) {
+      showBanner();
+    }
+  });
+
+  // close
+  const closeBtn = banner.querySelector('.cookie_close a');
+
+  closeBtn.addEventListener('click', function() {
+    banner.classList.remove('active');
+    banner.classList.add('closing');
+
+    setTimeout(() => {
+      banner.style.display = 'none';
+      banner.classList.remove('closing');
+    }, 400);
+
+    localStorage.setItem(storageKey, "hidden");
+  });
+
+});
+</script>
+
+{% schema %}
+{
+  "name": "t:sections.components.name",
+  "blocks": [
+    {
+      "type": "newsletter_popup",
+      "name": "t:sections.components.blocks.newsletter_popup.name",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "enable_popup",
+          "label": "t:sections.components.blocks.newsletter_popup.settings.enable_popup.label",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.components.blocks.newsletter_popup.settings.image.label"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "t:sections.components.blocks.newsletter_popup.settings.heading.label"
+        },
+        {
+          "type": "select",
+          "id": "heading_size",
+          "options": [
+            {
+              "value": "h2",
+              "label": "t:sections.all.heading_size.options__1.label"
+            },
+            {
+              "value": "h1",
+              "label": "t:sections.all.heading_size.options__2.label"
+            },
+            {
+              "value": "h0",
+              "label": "t:sections.all.heading_size.options__3.label"
+            },
+            {
+              "value": "hxl",
+              "label": "t:sections.all.heading_size.options__4.label"
+            },
+            {
+              "value": "hxxl",
+              "label": "t:sections.all.heading_size.options__5.label"
+            }
+          ],
+          "default": "h1",
+          "label": "t:sections.all.heading_size.label"
+        },
+        {
+          "type": "richtext",
+          "id": "sub_text",
+          "label": "t:sections.components.blocks.newsletter_popup.settings.sub_text.label"
+        },
+        {
+          "type": "select",
+          "id": "text_style",
+          "options": [
+            {
+              "value": "body",
+              "label": "t:sections.components.blocks.newsletter_popup.settings.text_style.options__1.label"
+            },
+            {
+              "value": "subtitle",
+              "label": "t:sections.components.blocks.newsletter_popup.settings.text_style.options__2.label"
+            }
+          ],
+          "default": "body",
+          "label": "t:sections.components.blocks.newsletter_popup.settings.text_style.label"
+        },
+        {
+          "type": "richtext",
+          "id": "extra_text",
+          "label": "t:sections.components.blocks.newsletter_popup.settings.extra_text.label"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_remember",
+          "label": "t:sections.components.blocks.newsletter_popup.settings.enable_remember.label",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "force_show_every_time",
+          "label": "t:sections.components.blocks.newsletter_popup.settings.force_show_every_time.label",
+          "default": false
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme",
+          "label": "t:sections.all.colors.label",
+          "default": "scheme-1"
+        }
+      ]
+    },
+    {
+      "type": "cookie_banner",
+      "name": "t:sections.components.blocks.cookie_banner.name",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "cookie_text",
+          "label": "t:sections.components.blocks.cookie_banner.settings.cookie_text.label"
+        },
+        {
+          "type": "text",
+          "id": "close_btn_text",
+          "label": "t:sections.components.blocks.cookie_banner.settings.close_btn_text.label"
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme",
+          "label": "t:sections.all.colors.label",
+          "default": "scheme-1"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %} {% endcomment %}
