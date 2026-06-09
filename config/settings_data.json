@@ -89,7 +89,7 @@
     "blocks": {
       "2220678938371165848": {
         "type": "shopify://apps/nivara-aov-app-custom/blocks/app-embed/019eaae9-d0af-742e-a6b8-f2e47cdfcb97",
-        "disabled": false,
+        "disabled": true,
         "settings": {}
       }
     },
